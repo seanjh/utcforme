@@ -1,0 +1,10 @@
+version=0.1
+
+[dev.deploy.parameters]
+profile = "seanherman-dev"
+region = "us-east-1"
+stack_name = "dev-test-api"
+s3_bucket = "test-713237909615-api-deploy"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+parameter_overrides= "ParameterKey=Env,ParameterValue=dev"

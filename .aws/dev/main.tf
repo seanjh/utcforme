@@ -1,5 +1,4 @@
 terraform {
-  # via https://www.terraform.io/docs/backends/types/s3.html
   backend "s3" {
     bucket         = "seanjh-117936299034-terraform-state"
     dynamodb_table = "seanjh-terraform-locks"
@@ -11,4 +10,11 @@ terraform {
 
 provider "aws" {
   region = "us-east-1"
+  assume_role {
+    role_arn = "arn:aws:iam::713237909615:role/admin"
+  }
+}
+
+module "serverless" {
+  source = "../modules/serverless"
 }

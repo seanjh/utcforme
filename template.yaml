@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Parameters:
+  Env:
+    Type: String
+    AllowedValues:
+      - dev
+
+Globals:
+  Function:
+    Runtime: go1.x
+    Timeout: 50
+
+Resources:
+  AccessLogs:
+    Type: AWS::Logs::LogGroup
+
+  Gateway:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      AccessLogSettings:
+        DestinationArn: !GetAtt AccessLogs.Arn
+        Format: $context.requestId
+      FailOnWarnings: true
+      StageName: '$default'
+
+  Api:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Description: API server
+      Events:
+        Api:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref Gateway
+            Path: /v1/api/{proxy+}
+            Method: get
+      Handler: api
+      # Role: TODO
+    Metadata:
+      BuildMethod: makefile

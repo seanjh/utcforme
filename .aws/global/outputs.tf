@@ -8,6 +8,11 @@ output "dynamodb_table_name" {
   description = "The name of the Terraform locks DynamoDB table"
 }
 
+output "aws_organization" {
+  description = "AWS organization"
+  value       = aws_organizations_organization.org
+}
+
 output "aws_managed_account_dev" {
   description = "AWS organization account - dev"
   value       = module.aws_account_dev.managed_account

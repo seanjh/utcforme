@@ -29,7 +29,8 @@ type Application struct {
 	errorLog *log.Logger
 }
 
-func index(w http.ResponseWriter, r *http.Request) {
+func (app *Application) index(w http.ResponseWriter, r *http.Request) {
+	app.errorLog.Printf("cannot find path: %s", r.URL.Path)
 	http.NotFound(w, r)
 }
 

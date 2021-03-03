@@ -1,8 +1,8 @@
-#resource "aws_iam_account_alias" "alias" {
-#provider = aws.managed_account
+resource "aws_iam_account_alias" "alias" {
+  provider = aws.managed_account
 
-#account_alias = var.name
-#}
+  account_alias = "seanherman-${var.name}"
+}
 
 data "aws_caller_identity" "parent_account" {
   provider = aws.parent_account
