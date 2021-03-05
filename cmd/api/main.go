@@ -3,10 +3,14 @@ package main
 import (
 	"flag"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/apex/gateway/v2"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+
+	"github.com/seanjh/utcforme/internal/api"
 )
 
 type config struct {
@@ -17,6 +21,10 @@ type config struct {
 const defaultAddr = ":3000"
 const defaultBaseRoute = "/v1/api"
 
+func boom(w http.ResponseWriter, r *http.Request) {
+	panic("oh heck")
+}
+
 func main() {
 	cfg := new(config)
 	flag.StringVar(&cfg.addr, "addr", defaultAddr, "HTTP network address")
@@ -26,23 +34,15 @@ func main() {
 	infoLog := log.New(os.Stdout, "INFO\t", log.LstdFlags|log.Lmicroseconds|log.LUTC)
 	errorLog := log.New(os.Stderr, "ERROR\t", log.LstdFlags|log.Lmicroseconds|log.Lshortfile|log.LUTC)
 
-	app := Application{
-		clock:    defaultClock{},
-		infoLog:  infoLog,
-		errorLog: errorLog,
-	}
+	app := api.DefaultApp(infoLog, errorLog)
 
 	r := mux.NewRouter().PathPrefix(cfg.baseRoute).Subrouter()
-	r.HandleFunc("/", app.index)
-	r.HandleFunc("/now", app.now)
-
-	//srv := &http.Server{
-	//Addr:     cfg.Addr,
-	//ErrorLog: errorLog,
-	//Handler:  mux,
-	//}
+	r.HandleFunc("/", app.Index)
+	r.HandleFunc("/now", app.Now)
+	r.HandleFunc("/boom", boom)
 
 	infoLog.Printf("starting server on %s", cfg.addr)
-	gateway.ListenAndServe(cfg.addr, r)
-	//errorLog.Fatal(srv.ListenAndServe())
+	gateway.ListenAndServe(cfg.addr, handlers.RecoveryHandler(
+		handlers.PrintRecoveryStack(true),
+	)(r))
 }

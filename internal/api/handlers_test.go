@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"io/ioutil"
@@ -21,10 +21,10 @@ func TestNow(t *testing.T) {
 	}
 
 	logger := log.New(os.Stderr, "", log.LstdFlags)
-	app := Application{
-		clock:    staticClock{time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC)},
-		infoLog:  logger,
-		errorLog: logger,
+	app := App{
+		clock:   staticClock{time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC)},
+		logInfo: logger,
+		logErr:  logger,
 	}
 	app.now(rec, req)
 
